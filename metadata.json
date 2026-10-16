@@ -1,0 +1,5 @@
+{
+  "name": "AI Workplace Productivity Assistant",
+  "description": "AI tools for emails, research and chat, powered by Gemini.",
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

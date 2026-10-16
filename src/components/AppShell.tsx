@@ -1,7 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  LayoutDashboard, Mail, Search, MessageSquare, Settings, Menu, X, Zap, AlertTriangle,
+  LayoutDashboard,
+  Mail,
+  Search,
+  MessageSquare,
+  Settings,
+  Menu,
+  X,
+  Zap,
+  AlertTriangle,
 } from "lucide-react";
 
 const NAV = [
@@ -56,7 +64,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         <div className="flex items-center justify-between">
           <Logo />
-          <button className="text-sidebar-foreground lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu">
+          <button
+            className="text-sidebar-foreground lg:hidden"
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -85,12 +97,17 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
 
         {notice && (
-          <div role="dialog" aria-label="Notice" className="mx-4 mt-4 flex items-start gap-3 rounded-xl border border-warning bg-warning-soft p-4 sm:mx-8">
+          <div
+            role="dialog"
+            aria-label="Notice"
+            className="mx-4 mt-4 flex items-start gap-3 rounded-xl border border-warning bg-warning-soft p-4 sm:mx-8"
+          >
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden />
             <div className="flex-1 text-sm">
               <p className="font-semibold">Welcome! A quick note before you start</p>
               <p className="mt-1 text-muted-foreground">
-                {DISCLAIMER} Add your own Gemini API key in Settings — it stays in this browser only.
+                {DISCLAIMER} Add your own Gemini API key in Settings — it stays in this browser
+                only.
               </p>
             </div>
             <button

@@ -10,7 +10,10 @@ export const Route = createFileRoute("/chat")({
   head: () => ({
     meta: [
       { title: "AI Chatbot — AI Workplace Assistant" },
-      { name: "description", content: "Chat with an AI assistant for planning, writing and brainstorming at work." },
+      {
+        name: "description",
+        content: "Chat with an AI assistant for planning, writing and brainstorming at work.",
+      },
       { property: "og:title", content: "AI Workplace Chatbot" },
       { property: "og:description", content: "Your AI teammate for everyday work questions." },
     ],
@@ -36,14 +39,19 @@ function ChatPage() {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, loading]);
-  useEffect(() => { if (!loading) inputRef.current?.focus(); }, [loading]);
+  useEffect(() => {
+    if (!loading) inputRef.current?.focus();
+  }, [loading]);
 
   async function ask(history: ChatTurn[]) {
     setMsgs(history);
     setLoading(true);
     setError("");
     try {
-      const reply = await callGemini({ system: buildSystemPrompt(PROMPTS.chat), contents: history });
+      const reply = await callGemini({
+        system: buildSystemPrompt(PROMPTS.chat),
+        contents: history,
+      });
       setMsgs([...history, { role: "model", text: reply }]);
     } catch (e) {
       setError((e as Error).message);
@@ -64,13 +72,21 @@ function ChatPage() {
     if (lastUser >= 0) ask(msgs.slice(0, lastUser + 1));
   };
 
-  const editMsg = (i: number, text: string) => setMsgs(msgs.map((m, j) => (j === i ? { ...m, text } : m)));
+  const editMsg = (i: number, text: string) =>
+    setMsgs(msgs.map((m, j) => (j === i ? { ...m, text } : m)));
 
   return (
     <div className="mx-auto flex h-[calc(100vh-11rem)] max-w-4xl flex-col">
       <div className="flex items-start justify-between gap-4">
         <PageHeader title="AI Chatbot" subtitle="Ask anything about your work." />
-        <button className="btn-ghost" onClick={() => { setMsgs([]); setError(""); }} disabled={!msgs.length || loading}>
+        <button
+          className="btn-ghost"
+          onClick={() => {
+            setMsgs([]);
+            setError("");
+          }}
+          disabled={!msgs.length || loading}
+        >
           <Trash2 className="h-4 w-4" /> Clear Chat
         </button>
       </div>
@@ -86,7 +102,11 @@ function ChatPage() {
                 <p className="mt-4 font-semibold">How can I help today?</p>
                 <div className="mt-5 flex flex-wrap justify-center gap-2">
                   {CHIPS.map((c) => (
-                    <button key={c} className="rounded-full border border-border bg-accent px-3.5 py-1.5 text-sm text-accent-foreground transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => send(c)}>
+                    <button
+                      key={c}
+                      className="rounded-full border border-border bg-accent px-3.5 py-1.5 text-sm text-accent-foreground transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      onClick={() => send(c)}
+                    >
                       {c}
                     </button>
                   ))}
@@ -96,12 +116,16 @@ function ChatPage() {
           )}
           {msgs.map((m, i) => (
             <div key={i} className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
-              <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${m.role === "user" ? "bg-muted text-foreground" : "bg-brand text-primary-foreground"}`}>
+              <div
+                className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${m.role === "user" ? "bg-muted text-foreground" : "bg-brand text-primary-foreground"}`}
+              >
                 {m.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
               </div>
               <div className={`max-w-[80%] ${m.role === "user" ? "text-right" : ""}`}>
                 {m.role === "user" ? (
-                  <div className="inline-block whitespace-pre-wrap rounded-2xl rounded-tr-sm bg-brand px-4 py-2.5 text-left text-sm text-primary-foreground">{m.text}</div>
+                  <div className="inline-block whitespace-pre-wrap rounded-2xl rounded-tr-sm bg-brand px-4 py-2.5 text-left text-sm text-primary-foreground">
+                    {m.text}
+                  </div>
                 ) : (
                   <>
                     <div
@@ -115,7 +139,9 @@ function ChatPage() {
                     </div>
                     <div className="mt-2 flex gap-2">
                       <CopyButton text={m.text} />
-                      {i === msgs.length - 1 && <RegenButton onClick={regenerate} loading={loading} />}
+                      {i === msgs.length - 1 && (
+                        <RegenButton onClick={regenerate} loading={loading} />
+                      )}
                     </div>
                   </>
                 )}
@@ -124,10 +150,16 @@ function ChatPage() {
           ))}
           {loading && (
             <div className="flex gap-3" aria-label="Assistant is typing">
-              <div className="grid h-8 w-8 place-items-center rounded-full bg-brand text-primary-foreground"><Bot className="h-4 w-4" /></div>
+              <div className="grid h-8 w-8 place-items-center rounded-full bg-brand text-primary-foreground">
+                <Bot className="h-4 w-4" />
+              </div>
               <div className="flex items-center gap-1 rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
                 {[0, 150, 300].map((d) => (
-                  <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: `${d}ms` }} />
+                  <span
+                    key={d}
+                    className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+                    style={{ animationDelay: `${d}ms` }}
+                  />
                 ))}
               </div>
             </div>
@@ -135,7 +167,13 @@ function ChatPage() {
           {error && <ErrorBox message={error} />}
           <div ref={endRef} />
         </div>
-        <form className="flex items-end gap-2 border-t border-border p-3" onSubmit={(e) => { e.preventDefault(); send(input); }}>
+        <form
+          className="flex items-end gap-2 border-t border-border p-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            send(input);
+          }}
+        >
           <textarea
             ref={inputRef}
             aria-label="Message"
@@ -144,9 +182,18 @@ function ChatPage() {
             placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send(input);
+              }
+            }}
           />
-          <button className="btn-primary h-10 w-10 shrink-0 p-0" disabled={loading || !input.trim()} aria-label="Send">
+          <button
+            className="btn-primary h-10 w-10 shrink-0 p-0"
+            disabled={loading || !input.trim()}
+            aria-label="Send"
+          >
             <Send className="h-4 w-4" />
           </button>
         </form>

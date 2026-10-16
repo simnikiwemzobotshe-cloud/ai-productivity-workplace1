@@ -8,18 +8,39 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dashboard — AI Workplace Productivity Assistant" },
-      { name: "description", content: "Draft emails, research topics and chat with an AI assistant powered by Gemini." },
+      {
+        name: "description",
+        content: "Draft emails, research topics and chat with an AI assistant powered by Gemini.",
+      },
       { property: "og:title", content: "AI Workplace Productivity Assistant" },
-      { property: "og:description", content: "Draft emails, research topics and chat with an AI assistant." },
+      {
+        property: "og:description",
+        content: "Draft emails, research topics and chat with an AI assistant.",
+      },
     ],
   }),
   component: Dashboard,
 });
 
 const TOOLS = [
-  { to: "/email", icon: Mail, title: "Email Generator", desc: "Turn a few notes into a polished email in your chosen tone." },
-  { to: "/research", icon: Search, title: "Research Assistant", desc: "Summarise any topic or web page into key points and actions." },
-  { to: "/chat", icon: MessageSquare, title: "AI Chatbot", desc: "Brainstorm, plan and get quick answers in a conversation." },
+  {
+    to: "/email",
+    icon: Mail,
+    title: "Email Generator",
+    desc: "Turn a few notes into a polished email in your chosen tone.",
+  },
+  {
+    to: "/research",
+    icon: Search,
+    title: "Research Assistant",
+    desc: "Summarise any topic or web page into key points and actions.",
+  },
+  {
+    to: "/chat",
+    icon: MessageSquare,
+    title: "AI Chatbot",
+    desc: "Brainstorm, plan and get quick answers in a conversation.",
+  },
 ] as const;
 
 function Dashboard() {
@@ -39,9 +60,13 @@ function Dashboard() {
           </div>
           <div className="flex-1">
             <p className="font-semibold">Connect your Gemini API key</p>
-            <p className="text-sm text-muted-foreground">The tools need your own key to generate content.</p>
+            <p className="text-sm text-muted-foreground">
+              The tools need your own key to generate content.
+            </p>
           </div>
-          <Link to="/settings" className="btn-primary">Add key</Link>
+          <Link to="/settings" className="btn-primary">
+            Add key
+          </Link>
         </div>
       )}
       {hasKey && (

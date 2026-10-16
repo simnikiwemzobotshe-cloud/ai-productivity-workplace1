@@ -16,7 +16,7 @@ export const MODEL = "gemini-3.8-flash";
 const ENDPOINT = "https://generativelanguage.googleapis.com/v1beta";
 
 export const getApiKey = () =>
-  typeof window === "undefined" ? "" : localStorage.getItem(KEY) ?? "";
+  typeof window === "undefined" ? "" : (localStorage.getItem(KEY) ?? "");
 export const setApiKey = (k: string) => localStorage.setItem(KEY, k.trim());
 export const clearApiKey = () => localStorage.removeItem(KEY);
 
@@ -47,7 +47,10 @@ const BLOCKED: Record<string, string> = {
 
 function describeError(status: number, msg: string, apiStatus = ""): string {
   const detail = msg ? ` (Google said: ${msg.slice(0, 200)})` : "";
-  if (/model/i.test(msg) && /not found|unsupported|unavailable|disabled|permission|denied/i.test(msg))
+  if (
+    /model/i.test(msg) &&
+    /not found|unsupported|unavailable|disabled|permission|denied/i.test(msg)
+  )
     return `Unsupported model: ${MODEL} isn't available for your key yet. Check the key on the Settings page.`;
   if ((status === 400 && /api key/i.test(msg)) || apiStatus === "UNAUTHENTICATED")
     return "Authentication error: your API key is invalid. Update it on the Settings page.";
@@ -84,8 +87,7 @@ export async function callGeminiWithSources(opts: {
   googleSearch?: boolean;
 }): Promise<{ text: string; sources: Source[] }> {
   const key = getApiKey();
-  if (!key)
-    throw new AIError("No API key found. Add your Gemini API key on the Settings page.");
+  if (!key) throw new AIError("No API key found. Add your Gemini API key on the Settings page.");
 
   const generationConfig: Record<string, unknown> = {
     // thinkingLevel is the Gemini 3 / 4 replacement for the deprecated
@@ -107,17 +109,20 @@ export async function callGeminiWithSources(opts: {
       }),
     });
   } catch {
-    throw new AIError("Network error: couldn't reach Google. Check your internet connection and try again.");
+    throw new AIError(
+      "Network error: couldn't reach Google. Check your internet connection and try again.",
+    );
   }
 
   if (!res.ok) {
     const data = (await res.json().catch(() => ({}))) as ApiResponse;
-    throw new AIError(describeError(res.status, data?.error?.message ?? "", data?.error?.status ?? ""));
+    throw new AIError(
+      describeError(res.status, data?.error?.message ?? "", data?.error?.status ?? ""),
+    );
   }
 
   const data = (await res.json().catch(() => null)) as ApiResponse | null;
-  if (!data)
-    throw new AIError("The AI sent back a response we couldn't read. Try regenerating.");
+  if (!data) throw new AIError("The AI sent back a response we couldn't read. Try regenerating.");
 
   const block = data.promptFeedback?.blockReason;
   if (block && block !== "BLOCK_REASON_UNSPECIFIED")
@@ -144,13 +149,17 @@ export async function callGeminiWithSources(opts: {
   const sources: Source[] = [];
   for (const c of cand?.groundingMetadata?.groundingChunks ?? []) {
     const url = c.web?.uri;
-    if (url && !sources.some((x) => x.url === url)) sources.push({ url, title: c.web?.title || url });
+    if (url && !sources.some((x) => x.url === url))
+      sources.push({ url, title: c.web?.title || url });
   }
   return { text, sources };
 }
 
 export function parseJSON<T>(text: string): T {
-  const cleaned = text.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  const cleaned = text
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/, "")
+    .trim();
   try {
     return JSON.parse(cleaned) as T;
   } catch {

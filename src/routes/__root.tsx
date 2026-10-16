@@ -80,16 +80,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "AI Workplace Productivity Assistant" },
-      { name: "description", content: "AI tools for emails, research and chat, powered by Gemini." },
+      {
+        name: "description",
+        content: "AI tools for emails, research and chat, powered by Gemini.",
+      },
       { property: "og:title", content: "AI Workplace Productivity Assistant" },
-      { property: "og:description", content: "AI tools for emails, research and chat, powered by Gemini." },
+      {
+        property: "og:description",
+        content: "AI tools for emails, research and chat, powered by Gemini.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,

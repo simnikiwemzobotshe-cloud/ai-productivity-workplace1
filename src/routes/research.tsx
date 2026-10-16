@@ -10,7 +10,10 @@ export const Route = createFileRoute("/research")({
   head: () => ({
     meta: [
       { title: "Research Assistant — AI Workplace Assistant" },
-      { name: "description", content: "Summarise topics or web pages into key points, insights and recommendations." },
+      {
+        name: "description",
+        content: "Summarise topics or web pages into key points, insights and recommendations.",
+      },
       { property: "og:title", content: "AI Research Assistant" },
       { property: "og:description", content: "Turn any topic or URL into a structured briefing." },
     ],
@@ -27,7 +30,8 @@ const SECTIONS = [
   { key: "recommendations", label: "Recommendations", icon: Target },
 ] as const;
 
-const toList = (a: unknown) => (Array.isArray(a) ? a.map((x) => `• ${x}`).join("\n") : String(a ?? ""));
+const toList = (a: unknown) =>
+  Array.isArray(a) ? a.map((x) => `• ${x}`).join("\n") : String(a ?? "");
 
 function ResearchPage() {
   const [mode, setMode] = useState<"topic" | "url">("topic");
@@ -46,13 +50,24 @@ function ResearchPage() {
       let pageSource: Source | null = null;
       if (mode === "url") {
         let url: URL;
-        try { url = new URL(v.startsWith("http") ? v : `https://${v}`); } catch { throw new AIError("That URL doesn't look valid."); }
+        try {
+          url = new URL(v.startsWith("http") ? v : `https://${v}`);
+        } catch {
+          throw new AIError("That URL doesn't look valid.");
+        }
         setLoading("Reading the page…");
         const r = await fetch(`https://r.jina.ai/${url.href}`).catch(() => null);
-        if (!r) throw new AIError("Network error: couldn't reach the page reader. Check your connection.");
-        if (!r.ok) throw new AIError(`Couldn't read that page (error ${r.status}). Check the URL or try another one.`);
+        if (!r)
+          throw new AIError(
+            "Network error: couldn't reach the page reader. Check your connection.",
+          );
+        if (!r.ok)
+          throw new AIError(
+            `Couldn't read that page (error ${r.status}). Check the URL or try another one.`,
+          );
         const page = (await r.text()).slice(0, 30000);
-        if (page.trim().length < 200) throw new AIError("That page had no readable text to analyse. Try a different URL.");
+        if (page.trim().length < 200)
+          throw new AIError("That page had no readable text to analyse. Try a different URL.");
         pageSource = { url: url.href, title: url.hostname };
         prompt = `Source URL: ${url.href}\n\nSource text:\n${page}`;
       }
@@ -64,7 +79,12 @@ function ResearchPage() {
         googleSearch: !pageSource,
         contents: [{ role: "user", text: prompt }],
       });
-      const j = parseJSON<{ summary?: unknown; keyPoints?: unknown; insights?: unknown; recommendations?: unknown }>(text);
+      const j = parseJSON<{
+        summary?: unknown;
+        keyPoints?: unknown;
+        insights?: unknown;
+        recommendations?: unknown;
+      }>(text);
       setResult({
         summary: String(j.summary ?? ""),
         keyPoints: toList(j.keyPoints),
@@ -83,8 +103,17 @@ function ResearchPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <PageHeader title="Research Assistant" subtitle="Get a structured briefing on any topic or web page." />
-      <form className="card" onSubmit={(e) => { e.preventDefault(); run(); }}>
+      <PageHeader
+        title="Research Assistant"
+        subtitle="Get a structured briefing on any topic or web page."
+      />
+      <form
+        className="card"
+        onSubmit={(e) => {
+          e.preventDefault();
+          run();
+        }}
+      >
         <div role="tablist" className="mb-4 inline-flex rounded-lg bg-muted p-1">
           {(["topic", "url"] as const).map((m) => (
             <button
@@ -92,7 +121,10 @@ function ResearchPage() {
               type="button"
               role="tab"
               aria-selected={mode === m}
-              onClick={() => { setMode(m); setInput(""); }}
+              onClick={() => {
+                setMode(m);
+                setInput("");
+              }}
               className={`inline-flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition ${mode === m ? "bg-card shadow-soft text-foreground" : "text-muted-foreground"}`}
             >
               {m === "topic" ? <Search className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
@@ -104,7 +136,11 @@ function ResearchPage() {
           <input
             aria-label={mode === "topic" ? "Topic" : "URL"}
             className="field flex-1"
-            placeholder={mode === "topic" ? "e.g. Benefits of a four-day work week" : "https://example.com/article"}
+            placeholder={
+              mode === "topic"
+                ? "e.g. Benefits of a four-day work week"
+                : "https://example.com/article"
+            }
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
@@ -142,10 +178,21 @@ function ResearchPage() {
             </div>
             {sources.length > 0 && (
               <div className="card">
-                <h2 className="mb-3 flex items-center gap-2 font-semibold"><Globe className="h-4 w-4 text-primary" /> Sources</h2>
+                <h2 className="mb-3 flex items-center gap-2 font-semibold">
+                  <Globe className="h-4 w-4 text-primary" /> Sources
+                </h2>
                 <ul className="space-y-1.5 text-sm">
                   {sources.map((s) => (
-                    <li key={s.url}><a href={s.url} target="_blank" rel="noreferrer" className="text-primary underline break-all">{s.title}</a></li>
+                    <li key={s.url}>
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary underline break-all"
+                      >
+                        {s.title}
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </div>

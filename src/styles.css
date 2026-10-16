@@ -74,7 +74,9 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * {
+    border-color: var(--color-border);
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -82,7 +84,9 @@
   }
 }
 
-@utility bg-brand { background-image: var(--gradient-brand); }
+@utility bg-brand {
+  background-image: var(--gradient-brand);
+}
 @utility text-brand {
   background-image: var(--gradient-brand);
   -webkit-background-clip: text;
@@ -103,5 +107,7 @@
   .field {
     @apply w-full rounded-lg border border-input bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
-  .label { @apply mb-1.5 block text-sm font-medium text-foreground; }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-foreground;
+  }
 }

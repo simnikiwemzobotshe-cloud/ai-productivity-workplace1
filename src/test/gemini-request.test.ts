@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AIError, callGemini, MODEL, parseJSON } from "@/lib/gemini";
 
 const KEY = "test-key-abc";
-const ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent";
+const ENDPOINT =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent";
 
 type Call = { url: string; init: RequestInit };
 let calls: Call[] = [];
@@ -53,7 +54,9 @@ describe("Gemini request", () => {
 
   it("asks for low reasoning effort and JSON output when requested", async () => {
     await callGemini({ system: "sys", contents: [{ role: "user", text: "hi" }] });
-    expect(bodyOf(callAt(0)).generationConfig).toEqual({ thinkingConfig: { thinkingLevel: "low" } });
+    expect(bodyOf(callAt(0)).generationConfig).toEqual({
+      thinkingConfig: { thinkingLevel: "low" },
+    });
 
     await callGemini({ system: "sys", contents: [{ role: "user", text: "hi" }], json: true });
     expect(bodyOf(callAt(1)).generationConfig).toEqual({
@@ -66,10 +69,7 @@ describe("Gemini request", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
-        answer([
-          { text: "I will be brief.", thought: true },
-          { text: "The real answer." },
-        ]),
+        answer([{ text: "I will be brief.", thought: true }, { text: "The real answer." }]),
       ),
     );
     const text = await callGemini({ system: "sys", contents: [{ role: "user", text: "hi" }] });
@@ -81,7 +81,12 @@ describe("Gemini request", () => {
       "fetch",
       vi.fn(async () =>
         response(
-          { error: { message: "Model [models/gemini-3.8-flash] is unavailable to new users.", status: "NOT_FOUND" } },
+          {
+            error: {
+              message: "Model [models/gemini-3.8-flash] is unavailable to new users.",
+              status: "NOT_FOUND",
+            },
+          },
           404,
         ),
       ),
@@ -100,7 +105,9 @@ describe("Gemini request", () => {
     );
     await expect(
       callGemini({ system: "sys", contents: [{ role: "user", text: "hi" }] }),
-    ).rejects.toThrow(new AIError("Authentication error: your API key is invalid. Update it on the Settings page."));
+    ).rejects.toThrow(
+      new AIError("Authentication error: your API key is invalid. Update it on the Settings page."),
+    );
   });
 });
 
@@ -117,7 +124,10 @@ describe("parseJSON", () => {
 
 describe("error kinds and sources", () => {
   const fail = (status: number, error: object) =>
-    vi.stubGlobal("fetch", vi.fn(async () => response({ error }, status)));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => response({ error }, status)),
+    );
   const run = () => callGemini({ system: "s", contents: [{ role: "user", text: "hi" }] });
 
   it("labels quota, overload, server and network failures distinctly, with one request each", async () => {
@@ -128,17 +138,38 @@ describe("error kinds and sources", () => {
     fail(500, { message: "Internal error", status: "INTERNAL" });
     await expect(run()).rejects.toThrow(/Google server error \(500\).*Internal error/);
     expect((fetch as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBe(1);
-    vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("fail"); }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("fail");
+      }),
+    );
     await expect(run()).rejects.toThrow(/Network error/);
   });
 
   it("returns grounded sources when Google Search is on", async () => {
     const { callGeminiWithSources } = await import("@/lib/gemini");
-    vi.stubGlobal("fetch", vi.fn(async (_u: string, init: RequestInit) => {
-      expect(JSON.parse(init.body as string).tools).toEqual([{ google_search: {} }]);
-      return response({ candidates: [{ content: { parts: [{ text: "{}" }] }, groundingMetadata: { groundingChunks: [{ web: { uri: "https://a.com", title: "A" } }] } }] });
-    }));
-    const r = await callGeminiWithSources({ system: "s", contents: [{ role: "user", text: "x" }], googleSearch: true });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_u: string, init: RequestInit) => {
+        expect(JSON.parse(init.body as string).tools).toEqual([{ google_search: {} }]);
+        return response({
+          candidates: [
+            {
+              content: { parts: [{ text: "{}" }] },
+              groundingMetadata: {
+                groundingChunks: [{ web: { uri: "https://a.com", title: "A" } }],
+              },
+            },
+          ],
+        });
+      }),
+    );
+    const r = await callGeminiWithSources({
+      system: "s",
+      contents: [{ role: "user", text: "x" }],
+      googleSearch: true,
+    });
     expect(r.sources).toEqual([{ url: "https://a.com", title: "A" }]);
   });
 });

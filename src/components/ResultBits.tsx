@@ -32,7 +32,10 @@ export function RegenButton({ onClick, loading }: { onClick: () => void; loading
 export function ErrorBox({ message }: { message: string }) {
   const keyIssue = /api key/i.test(message);
   return (
-    <div role="alert" className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm">
+    <div
+      role="alert"
+      className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
+    >
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
       <div>
         <p>{message}</p>
@@ -55,5 +58,7 @@ export function Spinner({ label }: { label: string }) {
 }
 
 export function AutoTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea {...props} className={`field resize-y leading-relaxed ${props.className ?? ""}`} />;
+  return (
+    <textarea {...props} className={`field resize-y leading-relaxed ${props.className ?? ""}`} />
+  );
 }
